@@ -1,0 +1,47 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────
+# Usage:
+#   docker compose up                          # default (nuextract)
+#   docker compose --profile mistral up        # Mistral-7B
+#   docker compose --profile qwen up           # Qwen2.5-VL
+#   docker compose --profile nuextract up      # NuExtract-2.0 (explicit)
+#
+# Mount real weights:
+#   docker compose up -v ./document_models:/app/document_models
+# ─────────────────────────────────────────────────────────────────
+
+x-base: &base
+  build: .
+  ports:
+    - "8000:8000"
+  volumes:
+    - ./document_models:/app/document_models:ro   # mount local weights
+
+services:
+  # ── Default (NuExtract) ─────────────────────────────────────────
+  app:
+    <<: *base
+    environment:
+      MODEL: nuextract
+
+  # ── Mistral profile ─────────────────────────────────────────────
+  app-mistral:
+    <<: *base
+    profiles: [mistral]
+    environment:
+      MODEL: mistral
+
+  # ── Qwen profile ────────────────────────────────────────────────
+  app-qwen:
+    <<: *base
+    profiles: [qwen]
+    environment:
+      MODEL: qwen
+
+  # ── NuExtract profile (explicit) ────────────────────────────────
+  app-nuextract:
+    <<: *base
+    profiles: [nuextract]
+    environment:
+      MODEL: nuextract
